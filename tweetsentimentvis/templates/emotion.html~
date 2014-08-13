@@ -1,0 +1,291 @@
+{% extends 'header_jumbotron.html' %}
+
+{% load temp_extras %}
+
+{% block main_content %}
+
+<div class="jumbotron">
+ <div class="container">
+
+<div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Update Tweets</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" role="form" action="/emotion" method="get">
+            <div class="form-group">
+              <input type="text" placeholder="{{ q }}" class="form-control" name="q">
+            </div>
+             <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+
+
+ <div class="bs-example bs-example-tabs">
+    <ul id="myTab" class="nav nav-tabs">
+      <li class="active"><a href="#home" data-toggle="tab"> Macro View </a></li>
+      <li><a href="#profile" data-toggle="tab"> Tweet View </a></li>
+     <li><a href="#topics" data-toggle="tab"> Topics </a></li>
+      <li class="dropdown">
+        <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown"> Analysis <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+          <li><a href="#dropdown1" tabindex="-1" data-toggle="tab"> Sentiment Table </a></li>
+          <li><a href="#dropdown2" tabindex="-1" data-toggle="tab"> Analysis tables </a></li>
+        </ul>
+      </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+
+      <div class="tab-pane fade in active" id="home">
+        <p>
+
+ <!--- Area for Home-->
+<table class="table table-bordered table-striped">
+
+<tr>
+<td>
+<h2>  <span class="label label-success"> Positive </span> {{ ana | posinegi:"up" }} <span class="glyphicon glyphicon-thumbs-up"> </span> </h2>
+</td>
+
+<td>
+ <h2> <span class="label label-danger"> Negative </span>{{ ana | posinegi:"down" }} <span class="glyphicon glyphicon-thumbs-down"> </span> </h2>
+</td>
+</table>
+
+
+<img src="/piechart"> <span class="label"> Sentiment PieChart </span> </img>
+
+</p>
+      </div>
+
+
+
+
+
+      <div class="tab-pane fade" id="profile">
+        <p>
+
+
+<!-- area for macro view -->
+
+
+   <div class="tweets">
+<br>
+<br>
+
+   {% for tweet in tweetlist %}
+<h4> <b> Emotions </b> </h4>
+      {% for t in tweet.labeled_words %}
+
+{% for u in t %}
+
+
+{% for l in u %}
+
+  {% if l == '4' %} 
+      <button type="button" class="btn btn-info">  disgust </button>
+
+
+ {% elif l == '1' %} 
+      <button type="button" class="btn btn-danger">  anger </button>
+ 
+
+ {% elif l == '2' %} 
+      <button type="button" class="btn btn-warning">  fear  </button>
+  
+
+ {% elif l == '3' %} 
+      <button type="button" class="btn btn-success">  trust </button>
+  
+
+ {% elif l == '5' %} 
+      <button type="button" class="btn btn-primary">  anticipation </button>
+  
+
+ {% elif l == '6' %} 
+      <button type="button" class="btn btn-success">  joy </button>
+  
+
+ {% elif l == '7' %} 
+      <button type="button" class="btn btn-default">  surprise </button>
+  
+
+ {% elif l == '0' %} 
+      <button type="button" class="btn btn-danger">  sadness </button>
+ 
+
+ {% elif l == '9' %} 
+  
+<div class="btn-group dropup">
+  <button type="button" class="btn btn-default">Positive</button>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <!-- Dropdown menu links -->
+    <li> <a href="#">  Action </a> </li>
+    <li> <a href="#"> Another Action </a> </li>
+    <li><a href="#">Something else here</a></li>
+    <li class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  
+  </ul>
+</div>
+ 
+
+ {% elif l == '8' %} 
+  
+<div class="btn-group">
+  <button type="button" class="btn btn-default"> Negative </button>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+    <li><a href="#">Something else here</a></li>
+    <li class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  </ul>
+</div>
+ 
+  {% endif %}
+
+{% endfor %}
+
+{% endfor %}
+
+      {% endfor %}
+
+   <div class="bs-example">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>By {{ tweet.user }} at {{ tweet.date }} </th>
+          </tr>
+      </thead>
+      <tbody>
+      
+        <tr>
+     
+          <td> <div class="well">{{ tweet.text }} </div> </td> 
+         </tr>
+     
+       
+      </tbody>
+    </table>
+  </div>
+
+{% endfor %}
+
+</div>
+
+
+
+   </p>
+      </div>
+
+
+
+
+      <div class="tab-pane fade" id="topics">
+        <p>
+
+{% for t in topics %}
+
+{% if t.resul == '1' %}
+<h1> {{ t.topic }} <span class="label label-default"> {{ t.freq }} </span> </h1>
+{% elif t.resul == '2' %}
+<h2> {{ t.topic }} <span class="label label-default"> {{ t.freq }} </span> </h2>
+
+{% elif t.resul == '3' %}
+<h3> {{ t.topic }} <span class="label label-default"> {{ t.freq }} </span> </h3>
+
+{% elif t.resul == '4' %}
+<h4> {{ t.topic }} <span class="label label-default"> {{ t.freq }} </span> </h4>
+
+{% elif t.resul == '5' %}
+<h5> {{ t.topic }} <span class="label label-default"> {{ t.freq }} </span> </h5>
+
+{% endif %}
+
+ 
+
+
+{% endfor %}
+
+</p>
+      </div>
+
+
+
+
+
+
+
+      <div class="tab-pane fade" id="dropdown1">
+        <p>
+
+<table class="table table-bordered table-striped">
+
+<tr>
+<td>
+<h2>  <span class="label label-success"> Positive </span> {{ ana | posinegi:"up" }} <span class="glyphicon glyphicon-thumbs-up"> </span> </h2>
+</td>
+
+<td>
+ <h2> <span class="label label-danger"> Negative </span>{{ ana | posinegi:"down" }} <span class="glyphicon glyphicon-thumbs-down"> </span> </h2>
+</td>
+</table>
+
+<h1>  <span class="label label-default">  Sadness   </span>  {{ ana | percen:"sadness" }} %  </h1>
+
+<h1>  <span class="label label-default">  Anger   </span>  {{ ana | percen:"anger" }} % </h1>
+
+
+<h1>  <span class="label label-default">  Fear   </span>  {{ ana | percen:"fear" }} % </h1>
+
+<h1>  <span class="label label-default">  Trust   </span>  {{ ana | percen:"trust" }} % </h1>
+
+<h1>  <span class="label label-default">  Disgust   </span>  {{ ana | percen:"disgust" }} % </h1>
+<h1>  <span class="label label-default">  Anticipation   </span>  {{ ana | percen:"anticipation" }} % </h1>
+
+<h1>  <span class="label label-default">  Joy   </span>  {{ ana | percen:"joy" }} % </h1>
+<h1>  <span class="label label-default">  Surprise   </span> {{ ana | percen:"surprise" }} %  </h1>
+
+
+</p>
+      </div>
+      <div class="tab-pane fade" id="dropdown2">
+        <p>
+
+
+<img src="/linechart"> </img>
+
+    </p>
+      </div>
+    </div>
+  </div><!-- /example -->
+
+
+
+
+
+
+ </div>
+</div>
+
+
+
+{% endblock main_content %}
+
+

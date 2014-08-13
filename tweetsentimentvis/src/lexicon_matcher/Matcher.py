@@ -1,0 +1,248 @@
+#! /usr/bin/env python
+
+import datetime
+import re
+
+### the main code for lexicon_matcher component
+
+from tweetsentimentvis.models import TweetObject, MacroObject, TimeObject
+
+
+def ravikirajProcessing(tweet_text):
+        ''' this does basic text based processing'''
+        #Convert to lower case
+        tweet_text = tweet_text.lower()
+        #Convert www.* or https?://* to URL
+        tweet_text = re.sub('((www\.[\s]+)|(https?://[^\s]+))','URL',tweet_text)
+        #Convert @username to AT_USER
+        tweet_text = re.sub('@[^\s]+','AT_USER',tweet_text)
+        #Remove additional white spaces
+        tweet_text = re.sub('[\s]+', ' ', tweet_text)
+        #Replace #word with word
+        tweet_text = re.sub(r'#([^\s]+)', r'\1', tweet_text)
+        #trim
+        tweet_text = tweet_text.strip('\'"')
+        return tweet_text
+        #end
+
+
+
+def get_tweets():
+       ''' this just flushes out all the tweets stored in the database '''
+ 
+       list1 = TweetObject.objects.all()
+
+       return list1
+
+
+
+
+class Tweet:
+        text = ""
+        user = ""
+        date = datetime.datetime(2014,1,1,0,0,0)
+        labeled_words = []
+
+
+
+def getDic():
+      ''' returns a dictionary for nrc emotion lexicon '''
+      dic  = {}
+      f = open('tweetsentimentvis/src/lexicon_matcher/lexicon.txt','r')
+      tmpstr = f.readline()
+      while tmpstr!="":
+          liss = []
+          words = tmpstr.split()
+          if words[2]=='1':
+             liss.append(0)
+          for i in range(9):
+            tmpstr = f.readline()
+            words = tmpstr.split()
+            if words[2]=='1':
+              liss.append(i+1)
+          dic[words[0]] = liss
+          tmpstr = f.readline()
+      return dic
+
+  
+def getName(n):
+       list1 = ["anger","anticipation","disgust","fear","joy","negative","positive","sadness","surprise","trust"]
+
+       return list1[n]
+
+
+def labelTweets(Tweets):
+        ''' labels emotions on tweets with lexicon matching method '''
+
+        dic = getDic()
+        now = Tweets[0].date
+        
+
+        for tweet in Tweets:
+             #tlist = []
+             #for i in range(10):
+             #    tlist.append(0)
+             
+             tweetwords = tweet.text.split()
+             labels = []
+             for tweetword in tweetwords:
+                     label = []
+                     label.append(tweetword)
+                     try: 
+                       label.append(dic[tweetword])
+                       
+                       #for l in dic[tweetword]:
+                       #      tlist[l] = tlist[l] + 1
+
+                     except KeyError:
+                        pass
+                     labels.append(label)
+             tweet.labeled_words = labels
+             ## use labels
+             #dif = (tweet.date-now).total_seconds()
+             #obj = TimeObject.objects.all()
+             #obj.delete()
+             #for i in range(len(tlist)):
+             #     n = TimeObject()
+             #     n.tim = int(dif)
+             #     n.emotion = getName(i)
+             #     n.valu = tlist[i]
+             #     n.save()
+             
+                   
+        return      
+       
+def getName(n):
+       list1 = ["anger","anticipation","disgust","fear","joy","negative","positive","sadness","surprise","trust"]
+
+       return list1[n]
+
+
+def analyze(Tweets):
+      ''' input tweets and it will give you analysis at macro level '''
+
+      liss = []
+      for i in range(10):
+         liss.append(0)
+
+      for Tweet in Tweets:
+           for l in Tweet.labeled_words:
+                 if len(l)!=1:
+                        for k in l[1]:
+                            liss[k] += 1
+
+      obj = MacroObject.objects.all()
+      obj.delete()
+
+      for i in range(len(liss)):
+          if i != 5 and i != 6 :
+                t = MacroObject()
+                t.text = getName(i)
+                t.valu = liss[i]
+                t.save()      
+
+      return liss
+
+  
+
+
+def put_labels():
+       ''' this function will fecth tweets from the databse and will put labels to it '''
+       
+       raw_tweets = get_tweets()
+   
+       Tweetlist = []
+  
+       for raw_tweet in raw_tweets:
+              new_tweet = Tweet()
+              new_tweet.text = ravikirajProcessing(raw_tweet.text)
+              new_tweet.user = raw_tweet.user
+              new_tweet.date = raw_tweet.date
+              Tweetlist.append(new_tweet)
+
+       labelTweets(Tweetlist)
+
+       return Tweetlist
+
+def getStopDic():
+       f = open('tweetsentimentvis/src/lexicon_matcher/stop_words.txt','r')
+   
+       line = f.readline()
+       dic = {}
+       while line!="":
+               words = line.split()
+               dic[words[0]] = 1
+               line = f.readline()
+ 
+       return dic
+
+
+def extract_topics(tweets):
+        '''  this will extract topics   '''
+
+        dic2 = {}
+
+        stopdic = getStopDic()
+
+        for tweet in tweets:
+                  words = (tweet.text).split()
+                  for word in words:
+                    try:
+                      if stopdic[word] == 1:
+                              pass
+                    except KeyError:
+                     
+                      if word!="AT_USER" and word!="URL":
+                        try:
+                         dic2[word] = dic2[word] + 1
+                        except KeyError:
+                           dic2[word] = 1
+
+        return dic2
+
+
+class Topic:
+       resul = '1'
+       topic = ""
+       freq = 0 
+
+def match():
+        ''' call this function for a list with tweets on 0 and analysis on 1'''
+        
+        tweetlist = put_labels()
+        ana = analyze(tweetlist)
+        dic2 = extract_topics(tweetlist)
+
+        list1 = []
+        for k in dic2.keys():
+             list1.append([dic2[k],k])
+
+        topics = sorted(list1)
+         
+        topicslist = []
+        for to in topics:
+               newone = Topic()
+               newone.topic = to[1]
+               newone.freq = to[0]
+               topicslist.append(newone)
+
+        topicslist.reverse()
+        
+        su = 0
+        for to in topicslist:
+            su = su + to.freq
+
+        for to in topicslist:
+              val = to.freq*100.0/su
+              if val > 0.3:
+                  to.resul = '1'
+              elif val > 0.2 and val < 0.3:
+                  to.resul = '2'
+              elif val > 0.1 and val < 0.4:
+                  to.resul = '3'
+              elif val < 0.1:
+                 to.resul = '5'
+
+        return [tweetlist,ana,topicslist]
+
+

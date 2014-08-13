@@ -1,0 +1,24 @@
+from django.db import models
+
+
+class TweetObject(models.Model):
+           
+           text = models.CharField(max_length = 150)
+           user = models.CharField(max_length = 30)
+           date = models.DateTimeField()
+       
+
+    
+
+class MacroObject(models.Model):
+           text = models.CharField(max_length=50)
+           valu = models.IntegerField()
+
+
+
+class TimeObject(models.Model):
+           emotion = models.CharField(max_length=50)
+           valu = models.IntegerField()
+           tim = models.IntegerField(max_length=15)
+
+

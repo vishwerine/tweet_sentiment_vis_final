@@ -1,0 +1,134 @@
+{% extends 'header_jumbotron.html' %}
+
+
+{% block active_h %}
+class="active"
+{% endblock %}
+
+
+{% block main_content %}
+
+    <div class="jumbotron">
+      <div class="container">
+       <center> <h1>Twitter Sentiment Visualization</h1>
+        <p>Type in a search query below to fetch relevant tweets from twitter</p> </center>
+        <h2> <center> <form action="/tweets" method="get">
+                          <input type="text" name="q">
+                         <input type="submit" value="Search">  <span class="glyphicon glyphicon-plane"> </span>
+         </form> </center> </h2>
+      </div>
+    </div>
+
+
+
+<div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Tweet Pre-Processing Techniques</h2>
+          <p>Details about tweet preprocessing techniques.... </p>
+
+
+<button class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal">
+  View details &raquo;
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Tweet Pre-Processing Techniques</h4>
+      </div>
+      <div class="modal-body">
+        For Tweet Pre-Processing..
+      Right Now we are taking into account the following steps:-
+<ul>
+ <li> Conveting Tweet text to lowercase </li>
+ <li> Neglecting Uniform Resource Loacters URLs </li>
+ <li> Neglecting usernames from the tweet text </li>
+ <li> Removing the hashes from the hashtags <li>
+ 
+</ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" > View More  </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        </div>
+        <div class="col-md-4">
+          <h2> Method to label tweets </h2>
+          <p>Simple lexicon matching methods </p>
+
+<button class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal1">
+  View details &raquo;
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Method to label tweets</h4>
+      </div>
+      <div class="modal-body">
+      For Analysis of short text messages from twitter.
+ We Match the individual words of the tweet with the NRC Emotion Lexicon.
+ And display the emotions and sentiments extracted.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">View More</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+       </div>
+        <div class="col-md-4">
+          <h2> Topics and Sentiments </h2>
+          <p>Information about topics and sentiments </p>
+
+<button class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal2">
+  View details &raquo;
+</button>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Topics and Sentiments</h4>
+      </div>
+      <div class="modal-body">
+        info will come here...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">View More</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+            
+
+
+
+{% endblock main_content %}
+
+
+
