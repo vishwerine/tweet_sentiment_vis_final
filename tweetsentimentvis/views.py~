@@ -18,11 +18,6 @@ def index(request):
 
 
 
-def tweets(request):
-        return HttpResponse("tweets")
-
-
-
 def emotion(request):
        q = request.GET['q']
        tweets = TweetFetcher.fetch(q)
@@ -80,17 +75,13 @@ def linechart(request):
     d.XLabel._text = request.session.get('Time')
     d.YLabel._text = request.session.get('Emotion')
     
-    
-    ang = TimeObject.objects.filter(emotion="anger")
-    listang = ()
-    for an in ang:
-         listang.append((an.tim,an.valu))
+     
 
-    d.chart.data = [listang]
+    d.chart.data = [((1,1.56), (2,2.78), (2.5,1), (3,3), (4,5)),((1,2), (2,3), (2.5,2), (3.5,5), (4,6))]
    
 
     
-    labels =  ["Label One"]
+    labels =  ["Label One","Label Two"]
     if labels:
         # set colors in the legend
         d.Legend.colorNamePairs = []

@@ -17,12 +17,6 @@ def index(request):
       return render(request,'index.html',{})
 
 
-
-def tweets(request):
-        return HttpResponse("tweets")
-
-
-
 def emotion(request):
        q = request.GET['q']
        tweets = TweetFetcher.fetch(q)

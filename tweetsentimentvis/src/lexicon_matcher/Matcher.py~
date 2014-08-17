@@ -16,6 +16,17 @@ def ravikirajProcessing(tweet_text):
         tweet_text = re.sub('((www\.[\s]+)|(https?://[^\s]+))','URL',tweet_text)
         #Convert @username to AT_USER
         tweet_text = re.sub('@[^\s]+','AT_USER',tweet_text)
+        
+        # Remove Punctuation Marks
+        puncs = ['!',',','(',')','?','.','_','/',';',':','\u0027','&','-','~','`']
+        news = ""
+        for c in tweet_text:
+             if c in puncs:
+               pass
+             else:
+               news = news + c
+        tweet_text = news                    
+
         #Remove additional white spaces
         tweet_text = re.sub('[\s]+', ' ', tweet_text)
         #Replace #word with word
@@ -79,9 +90,9 @@ def labelTweets(Tweets):
         
 
         for tweet in Tweets:
-             tlist = []
-             for i in range(10):
-                 tlist.append(0)
+             #tlist = []
+             #for i in range(10):
+             #    tlist.append(0)
              
              tweetwords = tweet.text.split()
              labels = []
@@ -91,23 +102,23 @@ def labelTweets(Tweets):
                      try: 
                        label.append(dic[tweetword])
                        
-                       for l in dic[tweetword]:
-                             tlist[l] = tlist[l] + 1
+                       #for l in dic[tweetword]:
+                       #      tlist[l] = tlist[l] + 1
 
                      except KeyError:
                         pass
                      labels.append(label)
              tweet.labeled_words = labels
              ## use labels
-             dif = (tweet.date-now).total_seconds()
-             obj = TimeObject.objects.all()
-             obj.delete()
-             for i in range(len(tlist)):
-                  n = TimeObject()
-                  n.tim = int(dif)
-                  n.emotion = getName(i)
-                  n.valu = tlist[i]
-                  n.save()
+             #dif = (tweet.date-now).total_seconds()
+             #obj = TimeObject.objects.all()
+             #obj.delete()
+             #for i in range(len(tlist)):
+             #     n = TimeObject()
+             #     n.tim = int(dif)
+             #     n.emotion = getName(i)
+             #     n.valu = tlist[i]
+             #     n.save()
              
                    
         return      
@@ -122,14 +133,20 @@ def analyze(Tweets):
       ''' input tweets and it will give you analysis at macro level '''
 
       liss = []
+      
       for i in range(10):
          liss.append(0)
-
+         
+      
       for Tweet in Tweets:
+           
            for l in Tweet.labeled_words:
+                 
                  if len(l)!=1:
+                        
                         for k in l[1]:
                             liss[k] += 1
+                  
 
       obj = MacroObject.objects.all()
       obj.delete()
@@ -147,7 +164,7 @@ def analyze(Tweets):
 
 
 def put_labels():
-       ''' this function will fecth tweets from the databse and will put labels to it '''
+       ''' this function will fecth tweets from the database and will put labels to it '''
        
        raw_tweets = get_tweets()
    
@@ -206,6 +223,33 @@ class Topic:
        topic = ""
        freq = 0 
 
+
+def transform(tweetlist):
+       ''' this function is basically resposible for removing repeated emotion tags'''
+       
+       for tweet in tweetlist:
+             new_labeled_words = []
+             anot = [] 
+             for l in tweet.labeled_words:
+                     newl = []
+                     if len(l)!= 1:
+                         anot2 = []
+                         for t in l:
+                              if t in anot:
+                                 pass
+                              else:
+                                anot2.append(t)
+                                anot.append(t)
+                         newl.append(l[0])
+                         if len(anot2)!=0:
+                           newl.append(anot2)
+                          
+                     else:
+                       newl.append(l[0])
+                     new_labeled_words.append(newl)
+             tweet.labeled_words = new_labeled_words
+       return tweetlist     
+
 def match():
         ''' call this function for a list with tweets on 0 and analysis on 1'''
         
@@ -242,6 +286,8 @@ def match():
                   to.resul = '3'
               elif val < 0.1:
                  to.resul = '5'
+        
+        tweetlist = transform(tweetlist)
 
         return [tweetlist,ana,topicslist]
 
